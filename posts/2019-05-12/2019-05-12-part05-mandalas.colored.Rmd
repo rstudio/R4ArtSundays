@@ -1,0 +1,97 @@
+---
+title: 'R for Art Sundays'
+output: 
+  html_document:
+    code_folding: hide
+---
+
+```{r setup, include=FALSE}
+```
+
+# Mandalas Colored
+
+by [Antonio Sánchez Chinchón](https://twitter.com/aschinchon)
+
+An R experiment to create mandalas colored using Voronoi tesselations and color them with palettes from colourLovers.
+
+Made with `tidyverse`, `deldir`, `colourlovers`, `rlist`
+
+**Blog post explaining the experiment:** [Mandalas Colored](https://fronkonstin.com/2018/03/11/mandalas-colored/)
+
+[Github repo with more details](https://github.com/aschinchon/mandalas-colored)
+
+
+```{r code, message=FALSE, warning=FALSE, error=FALSE, fig.width=8, fig.height=8, dpi=600}
+
+# Load in libraries
+library(tidyverse)
+library(deldir)
+library(colourlovers)
+library(rlist)
+
+# Parameters
+points <- 15 # Number of points
+iter <- 3 # Number of iterations (depth)
+radius <- 1.5312 # Factor of expansion/compression
+
+# Pick a top palette from COLOURLovers  
+pal <- clpalette(932683) %>% swatch %>% .[[1]] %>% unique()
+
+# Angles of points from center
+angles <- seq(0, 2*pi*(1-1/points), length.out = points)+pi/2
+
+# Initial center
+df <- data.frame(x=0, y=0)
+
+# Iterate over centers again and again
+for (k in 1:iter)
+{
+  temp <- data.frame()
+  for (i in 1:nrow(df))
+  {
+    data.frame(x=df[i,"x"]+radius^(k-1)*cos(angles), 
+               y=df[i,"y"]+radius^(k-1)*sin(angles)) %>% rbind(temp) -> temp
+  }
+  df <- temp
+}
+
+# Function to extract id, coordinates and area of each polygon
+crea = function(tile) {tile %>% list.match("ptNum|x|y|area") %>% as.data.frame()}
+
+# Generate tesselation, obtain polygons and create a dataframe with results
+# This dataframe will be the input of ggplot
+df %>% 
+  deldir(sort = TRUE)  %>% 
+  tile.list() %>% 
+  list.filter(sum(bp)==0) %>% 
+  list.filter(length(intersect(which(x==0), which(y==0)))==0) %>% 
+  lapply(crea) %>% 
+  list.rbind() ->  df_polygon
+
+
+# Draw mandala with geom_polygon. Colur depends on area
+plot <- ggplot(df_polygon, aes(x = x, y = y)) +
+  geom_polygon(aes(fill = area, color=area, group = ptNum), 
+               show.legend = FALSE, size=0)+
+  scale_fill_gradientn(colors=sample(pal, length(pal))) + 
+  scale_color_gradientn(colors="gray30") + 
+  coord_fixed() +
+  theme_void()
+
+plot
+
+```
+
+
+
+-----
+
+
+```{r, results='asis', echo=FALSE}
+
+cat(
+  " Compiled: ",
+  as.character(Sys.Date()),
+  sep = ""
+)
+```

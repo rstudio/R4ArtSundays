@@ -28,13 +28,13 @@ This experiment is inpired in nature. According to the [Wikipedia](https://en.wi
 
 library(ggplot2)
 
-angle <- 3.7359
-points <- 2593
-psize <- 21
-palpha <- 0.1
-pshape <- 3
-pcolor <- "#ECE5CE"
-bcolor <- "#774F38"
+angle <- 45.3
+points <- 540
+psize <- 38
+palpha <- 0.02
+pshape <- 17
+pcolor <- "linen"
+bcolor <- "magenta4"
 
 t <- (1:points)*angle
 x <- sin(t)

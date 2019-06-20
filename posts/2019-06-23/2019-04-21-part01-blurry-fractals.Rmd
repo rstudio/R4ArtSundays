@@ -10,7 +10,7 @@ output:
 
 ```
 
-## Blurry Fractals - Part 1
+## Blurry Fractals
 
 by Antonio Sánchez, 
 

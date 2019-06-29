@@ -1,0 +1,142 @@
+---
+title: 'R for Art Sundays'
+date: '2019-06-30'
+output: 
+  html_document:
+    code_folding: hide
+---
+
+```{r setup, include=FALSE}
+```
+
+# Storytelling With Vector Fields
+
+By Curtis Kephart. 
+
+Made with R, `dplyr`, & `ggplot2`
+
+### "Loss and Mourning"
+
+```{r code, message=FALSE, warning=FALSE, error=FALSE, fig.width=12, fig.height=12}
+library(ggplot2)
+library(dplyr)
+
+
+#--------
+
+
+
+minX <- -15
+maxX <- 15
+minY <- -15
+maxY <- 15
+len <- 78  #number by which the x,y space will be subdivided by
+#larger number => more points and vice versus 
+
+
+f_circ <- function(x,y){
+  return(sin(x) * y/4)
+}
+#create an equally spaced grid
+data <- data.frame(expand.grid(x = seq(minX, maxX, length.out=len), 
+                               y = seq(minY, maxY, length.out=len)))  
+#create a new column for the results of (x,y) applied on f_prime  
+data$dydx <- mapply(f_circ, data$x, data$y) +5
+data$dx <- data$y / len
+data$dy <- ((-data$x) / len)
+data$y = data$y + round(data$x/2)
+# 
+data$y = (data$y - (data$y %% ((maxY-minY) / (len - 1))))
+data$x = (data$x - (data$x %% ((maxX-minX) / (len - 1))))
+
+#rescale x, y , dx and dy so arrows are centered. 
+data = data %>%
+  mutate(
+    h_dist = (((dx)^2+(dy)^2)^0.5),
+    scaler = (.2 / ((dx^2+dy^2)^0.5)),
+    scaler2 = (((dx*scaler)^2+(dy*scaler)^2)^0.5),
+    dx2 = dx*scaler,
+    dy2 = dy*scaler,
+    h2_dist = (((dx2)^2+(dy2)^2)^0.5),
+    x3 = x + (dx2/2),
+    y3 = y + (dy2/2)
+  )  %>%
+  filter(
+
+    x < 5 & x > -6
+    & y > -6 & y < 5 
+  )
+
+# Insert the dead one
+data = data %>% 
+  filter(
+    (x != (data$x %>% unique())[15]
+       | y != (data$y %>% unique())[15])
+  )
+
+# Insert the mourning one
+data = data %>% 
+  mutate(
+    dx2 = if_else(
+      (x == (data$x %>% unique())[6] & y == (data$y %>% unique())[15]),
+      true = 0, dx2
+    ),
+    dy2 = if_else(
+      (x == (data$x %>% unique())[6] & y == (data$y %>% unique())[15]),
+      true = 0, dy2
+    )
+    )
+  
+
+minX <- -6.5
+maxX <- 6
+minY <- -6.7
+maxY <- 5.5
+plot = ggplot(data=data, aes(x=x3,y=y3), environment = environment()) + 
+  # geom_point(size = 1) + 
+  geom_segment(
+    aes(xend=x3-dx2, yend=y3-dy2) ,
+    arrow = arrow(
+      angle = 15,
+      length = unit(0.55, "cm"),
+      type = "closed",
+      ends = "last")
+  ) + 
+  xlim(minX,maxX) +
+  ylim(minY,maxY) +
+  theme_light() +
+  theme(
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank(),
+    panel.border = element_blank(),
+    axis.ticks = element_blank(),
+    axis.text = element_blank()
+  ) +
+  labs(
+    x = "", y = ""
+  )
+
+ggsave(
+  "storytelling-with-vector-fields.png",
+  width = 12, height = 12,
+  units = "in",
+  dpi = 600
+)
+
+plot
+
+```
+
+
+
+-----
+
+
+```{r, results='asis', echo=FALSE}
+
+cat(
+  " Compiled: ",
+  as.character(Sys.Date()),
+  sep = ""
+)
+```

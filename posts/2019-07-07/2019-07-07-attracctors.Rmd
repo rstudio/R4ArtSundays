@@ -1,0 +1,65 @@
+---
+title: 'R for Art Sundays'
+date: '2019-07-07'
+output: 
+  html_document:
+    code_folding: hide
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+```
+
+# attractor
+
+Made with R, `dplyr`, & `ggplot2`
+
+Repo https://github.com/andrie/attractor
+
+
+### "Loss and Mourning"
+
+```{r code, message=FALSE, warning=FALSE, error=FALSE, fig.width=5, fig.height=5}
+
+# install.packages("devtools")
+# devtools::install_github("andrie/attractor")
+
+
+library(magrittr)
+library(attractor)
+
+a <- seed_sprott_7e(000429)
+#> setting seed
+
+
+dat <- 
+  a %>% 
+  attractor_sprott_7e(1e9, dims = c(600, 600))
+
+
+
+
+dat %>% 
+  recolour(
+    "RdYlBu", invert = TRUE, zero_colour = "#000000"
+  ) %>% 
+  plot(
+  )
+
+
+```
+
+
+
+-----
+
+
+```{r, results='asis', echo=FALSE}
+
+cat(
+  " Compiled: ",
+  as.character(Sys.Date()),
+  sep = ""
+)
+```

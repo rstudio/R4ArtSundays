@@ -1,0 +1,37 @@
+---
+title: "R for Art Sundays: Your_Title"
+output: 
+  html_document:
+    code_folding: hide
+---
+
+# Title
+
+Made with R and (list and link to main packages and methods)
+
+Description: <!-- remove section if no description -->
+
+Repo: 
+
+<!-- List author website, blog, twitter, instagram, etc. -->
+
+
+```{r code, message=FALSE, warning=FALSE, error=FALSE, fig.width=12, fig.height=12}
+
+# insert code that replicates image to share. Add note about expected run times. 
+
+```
+
+
+
+-----
+
+
+```{r, results='asis', echo=FALSE}
+
+cat(
+  " Compiled: ",
+  as.character(Sys.Date()),
+  sep = ""
+)
+```

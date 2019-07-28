@@ -1,0 +1,70 @@
+---
+title: 'R for Art Sundays'
+output: 
+  html_document:
+    code_folding: hide
+---
+
+```{r setup, include=FALSE}
+```
+
+# Phyllotaxis: Drawing flowers with R
+
+by [Antonio Sánchez Chinchón](https://twitter.com/aschinchon)
+
+An R experiment to create imaginary flowers.
+
+Made with `ggplot2`
+
+This experiment is inpired in nature. According to the [Wikipedia](https://en.wikipedia.org/wiki/Phyllotaxis):
+
+> > In botany, phyllotaxis or phyllotaxy is the arrangement of leaves on a plant stem. Phyllotactic spirals form a distinctive class of patterns in nature.
+
+**Blog post explaining the experiment:** [Phyllotaxis by Shiny](https://fronkonstin.com/2015/12/14/phyllotaxis-by-shiny/)
+
+
+```{r code, eval=FALSE}
+
+library(ggplot2)
+
+angle <- 3.9565
+points <- 2081
+psize <- 52
+palpha <- 0.1
+pshape <- 13
+pcolor <- "#FF847C"
+bcolor <- "#FECEA8"
+
+t <- (1:points)*angle
+x <- sin(t)
+y <- cos(t)
+
+df <- data.frame(t, x, y)
+
+plot <- ggplot(df, aes(x*t, y*t)) +
+  geom_point(size=psize, alpha=palpha, shape=pshape, colour=pcolor)+ 
+  coord_equal() +
+  theme(legend.position="none",
+        panel.background = element_rect(fill=bcolor),
+        panel.grid=element_blank(),
+        axis.ticks=element_blank(),
+        axis.title=element_blank(),
+        axis.text=element_blank())
+
+plot
+
+```
+
+![](phyllotaxis.png)
+
+-----
+
+
+```{r, results='asis', echo=FALSE}
+
+cat(
+  " Compiled: ",
+  as.character(Sys.Date()),
+  sep = ""
+)
+```
